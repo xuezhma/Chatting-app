@@ -4,6 +4,7 @@ var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http); 
 
+var moment = require('moment');
 
 app.use(express.static(__dirname + '/public'));
 
@@ -11,13 +12,15 @@ io.on('connection', function(socket){
 	console.log("User connected via socket!");
 
 	socket.on('message', function(message){
-		console.log('Message receieved: ' + message.text);
-		//io.emit sends to everyone, socket.broadcast send to other users only;
-		socket.broadcast.emit('message',message);
+		message.timestamp = moment().valueOf();
+		console.log('Message receieved: ' + message.text + message.timestamp);
+		io.emit('message',message);
+		//socket.broadcast.emit('message',message);
 	});
 
 	socket.emit('message', {
-		text: 'Welcome to my chat app!'
+		text: 'Welcome to my chat app!',
+		timestamp: moment().valueOf()
 	});
 
 

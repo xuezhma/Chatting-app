@@ -15,8 +15,9 @@ console.log(now.format('X'));
 console.log(now.format('x'));
 
 var timestamp = 1446341354406;
-var timeMoment = moment.utc(1446341354406);
+var timeMoment = moment.utc(1446408400186);
 console.log(timeMoment.format('YYYY MMM Do, h:mm:ss'));
 console.log(timeMoment.hours());
 console.log(timeMoment.local().format('YYYY MMM Do, h:mm:ss'));
 console.log(timeMoment.hours());
+console.log(moment().valueOf());
