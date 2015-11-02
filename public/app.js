@@ -18,8 +18,14 @@ socket.on('message',function(message){
 	console.log('New message: ');
 	console.log(message.text);
 	var $message = jQuery('.messages');
-	$message.append('<p><strong>'+ momentTimesstamp.local().format('h:mm a') + ' ' + message.name +': </strong></p>');
-	$message.append('<p>' + message.text + '</p>');
+
+	//user command /clear
+	if(message.text === '/clear'){
+		$message.text(" ");
+	}else{
+		$message.append('<p><strong>'+ momentTimesstamp.local().format('h:mm a') + ' ' + message.name +': </strong></p>');
+		$message.append('<p>' + message.text + '</p>');
+	}
 });
 
 var $form = jQuery('#messgae-form');

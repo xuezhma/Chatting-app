@@ -1,1 +1,6 @@
 node_modules/
+.DS_Store
+
+public/.DS_Store
+
+public/js/.DS_Store

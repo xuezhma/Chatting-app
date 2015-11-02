@@ -10,6 +10,34 @@ app.use(express.static(__dirname + '/public'));
 
 var clientInfo = {};
 
+function sendHelp(socket){
+	socket.emit('message', {
+		name: 'System',
+		text: '<strong>Current commands:</strong></p><p> type "/currentUsers" for the names of current user in your chat room</p><p>type "/clear" to clear the chat</p><p> More commands are on the way!',
+		timestamp: moment().valueOf()
+	});
+}
+
+function sendCurrentUsers(socket){
+	var info = clientInfo[socket.id];
+	var users = [];
+
+	if (typeof info === 'undefined') {
+		return;
+	}
+	Object.keys(clientInfo).forEach(function(socketId){
+		var userInfo = clientInfo[socketId];
+		if (info.room === userInfo.room){
+			users.push(userInfo.name);
+		}
+	});
+
+	socket.emit('message', {
+		name: 'System',
+		text: 'current Users: ' + users.join(', '),
+		timestamp: moment().valueOf()
+	});
+}
 
 io.on('connection', function(socket){
 	console.log("User connected via socket!");
@@ -23,7 +51,7 @@ io.on('connection', function(socket){
 				text: userData.name + ' has left!',
 				timestamp: moment().valueOf()
 			});
-			delete userData;
+			delete clientInfo[socket.id];
 		}
 	});
 
@@ -39,15 +67,24 @@ io.on('connection', function(socket){
 
 
 	socket.on('message', function(message){
-		message.timestamp = moment().valueOf();
 		console.log('Message receieved: ' + message.text + message.timestamp);
-		io.to(clientInfo[socket.id].room).emit('message',message);
-		//socket.broadcast.emit('message',message);
+
+		if (message.text === '/currentUsers') {
+			sendCurrentUsers(socket);
+		}else if(message.text === '/help'){
+			sendHelp(socket);
+		}else{
+			message.timestamp = moment().valueOf();
+			io.to(clientInfo[socket.id].room).emit('message',message);
+			//socket.broadcast.emit('message',message);
+		}
+
+		
 	});
 
 	socket.emit('message', {
 		name: 'System',
-		text: 'Welcome to my chat app!',
+		text: 'Welcome to my chat app!</p><p> Type "/help" for user commands!',
 		timestamp: moment().valueOf()
 	});
 
