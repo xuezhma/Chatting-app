@@ -11,3 +11,11 @@ body {
 	display: flex;
 	align-items: center;
 }
+
+h1{
+	margin: 24px 0;
+}
+
+.messages p {
+	margin: 6px 0;
+}

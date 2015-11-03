@@ -17,14 +17,15 @@ socket.on('message',function(message){
 	var momentTimesstamp = moment.utc(message.timestamp);
 	console.log('New message: ');
 	console.log(message.text);
-	var $message = jQuery('.messages');
-
+	var $messages = jQuery('.messages');
+	var $message = jQuery('<li class="list-group-item"></li>');
 	//user command /clear
 	if(message.text === '/clear'){
-		$message.text(" ");
+		$messages.text(" ");
 	}else{
 		$message.append('<p><strong>'+ momentTimesstamp.local().format('h:mm a') + ' ' + message.name +': </strong></p>');
 		$message.append('<p>' + message.text + '</p>');
+		$messages.append($message);
 	}
 });
 
