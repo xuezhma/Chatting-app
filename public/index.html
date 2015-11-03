@@ -3,18 +3,42 @@
 <head>
 	<meta charset="UTF-8">
 	<title>Chatting Rooms</title>
+	<link rel="stylesheet" type="text/css" href="./css/bootstrap.min.css">
+	<link rel="stylesheet" type="text/css" href="./css/styles.css">
 </head>
 <body>
-	<h1>Join Chat</h1>
+	
 	<form action='/chat.html'>
-		<label>Display Name: </label>
-		<input type="text" name="name" required>
-		<br><br>
-		<label>Room to Enter: </label>
-		<input type="text" name="room" required>
-		<br><br>
-		<input type="submit" value="Join Chat">
-	</form>
+	<div class="vertical-center">
+	<div class="container">
+	<div class="row">
+	<div class="col-md-4 col-md-offset-4 well">
+	<h1>Join Chat</h1><br>
+		<div class="form-group">
+			<label>Display Name: </label>
+			<div class="input-group">
+			<span class="input-group-addon">
+				<i class="glyphicon glyphicon-user"></i>
+			</span>
+			<input class="form-control" type="text" name="name" required>
+			</div>
+			<br><br>
+			<label>Room to Enter: </label>
+			<div class="input-group">
+			<span class="input-group-addon">
+				<i class="glyphicon glyphicon-lock"></i>
+			</span>
+			<input class="form-control" type="text" name="room" required>
+			</div>
+			<br><br>
+			<input class="btn btn-primary btn-block" type="submit" value="Join Chat">
+		</form>
+		</div>
+	</div>
+	</div>
+	</div>
+	</div>
+	
 	
 </body>
 </html>
