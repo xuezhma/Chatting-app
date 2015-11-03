@@ -10,6 +10,7 @@ app.use(express.static(__dirname + '/public'));
 
 var clientInfo = {};
 
+//user commands starts here
 function sendHelp(socket){
 	socket.emit('message', {
 		name: 'System',
@@ -39,6 +40,16 @@ function sendCurrentUsers(socket){
 	});
 }
 
+function sendClear(socket){
+	socket.emit('message', {
+		name: 'System',
+		text: '/clear',
+		timestamp: moment().valueOf()
+	});
+}
+
+
+// user commands end here
 io.on('connection', function(socket){
 	console.log("User connected via socket!");
 
@@ -73,6 +84,8 @@ io.on('connection', function(socket){
 			sendCurrentUsers(socket);
 		}else if(message.text === '/help'){
 			sendHelp(socket);
+		}else if(message.text === '/clear'){
+			sendClear(socket);
 		}else{
 			message.timestamp = moment().valueOf();
 			io.to(clientInfo[socket.id].room).emit('message',message);
