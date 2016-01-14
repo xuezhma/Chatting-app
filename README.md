@@ -2,7 +2,7 @@
 <h2>Introduction</h2>
 <p>This project is a practice to my self-studying.</p>
 <p>It is a web-based real time chatting app in node.js.</p>
-<p>Demon on Heroku: https://safe-shore-4614.herokuapp.com/ </p>
+<p>Demo on Heroku: https://safe-shore-4614.herokuapp.com/ </p>
 <p>Used tools include: Express, Socket.io, Mongodb, Mongoose, Moment.js, jQuery, and Bootstrap</p>
 
 <h2>Instruction</h2>
