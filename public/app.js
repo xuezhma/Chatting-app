@@ -23,7 +23,7 @@ socket.on('message',function(message){
 	if(message.text === '/clear'){
 		$messages.text(" ");
 	}else{
-		$message.append('<p><strong>'+ momentTimesstamp.local().format('h:mm a') + ' ' + message.name +': </strong></p>');
+		$message.append('<p>'+ momentTimesstamp.local().format('MMM Do, YYYY h:mm a') + ' </p><p><strong>' + message.name +': </strong></p>');
 		$message.append('<p>' + message.text + '</p>');
 		$messages.append($message);
 	}

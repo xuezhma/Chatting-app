@@ -20,7 +20,7 @@ var messageSchema = new Schema({
 	room: String,
 	name: String,
 	text: String,
-	timestamp: String
+	timestamp: Number
 });
 
 var messageObject = mongoose.model('message', messageSchema);
@@ -33,7 +33,11 @@ var clientInfo = {};
 function sendHelp(socket){
 	socket.emit('message', {
 		name: 'System',
-		text: '<strong>Current commands:</strong></p><p> type "/currentUsers" for the names of current user in your chat room</p><p>type "/clear" to clear the chat</p><p> More commands are on the way!',
+		text: '<strong>Current commands:</strong></p>\
+		<ul><li> type "/currentUsers" for the names of current user in your chat room</li>\
+		<li>type "/clear" to clear the chat</li>\
+		<li>type "/roomHis" to display the message history of your current room.</li>\
+		<li> More commands are on the way!</p></li>',
 		timestamp: moment().valueOf()
 	});
 }
@@ -67,16 +71,69 @@ function sendClear(socket){
 	});
 }
 
+function sendRoomHis(socket){
+	messageObject.find({
+		room: clientInfo[socket.id].room
 
-// user commands end here
-io.on('connection', function(socket){
-	messageObject.find({},function(err, messages){
+	},function(err, messages){
 		if(err) throw err;
 
 		console.log(messages);
-	})
+
+		socket.emit('message', {
+			name: 'System',
+			text: '/clear',
+			timestamp: moment().valueOf()
+		});
+
+		socket.emit('message', {
+			name: 'System',
+			text: 'There is the message history of this chat room.',
+			timestamp: moment().valueOf()
+		});
+
+		for (var i = 0; i < messages.length; i++) {
+			socket.emit('message', messages[i]);
+		};
+		
+	});
+}
+
+function sendMyHis(socket){
+	messageObject.find({
+		name: clientInfo[socket.id].name
+
+	},function(err, messages){
+		if(err) throw err;
+
+		console.log(messages);
+
+		socket.emit('message', {
+			name: 'System',
+			text: '/clear',
+			timestamp: moment().valueOf()
+		});
+
+		socket.emit('message', {
+			name: 'System',
+			text: 'There is the message history of your current display name',
+			timestamp: moment().valueOf()
+		});
+
+		for (var i = 0; i < messages.length; i++) {
+			messages[i].name = "At Room " + messages[i].room;
+			socket.emit('message', messages[i]);
+		};
+		
+	});
+}
+
+// user commands end here
+io.on('connection', function(socket){
+	
 	
 	console.log("User connected via socket!");
+
 
 	socket.on('disconnect',function(){
 		var userData = clientInfo[socket.id];
@@ -111,6 +168,10 @@ io.on('connection', function(socket){
 			sendHelp(socket);
 		}else if(message.text === '/clear'){
 			sendClear(socket);
+		}else if(message.text === '/roomHis'){
+			sendRoomHis(socket);
+		}else if(message.text === '/myHis'){
+			sendMyHis(socket);
 		}else{
 			message.timestamp = moment().valueOf();
 			io.to(clientInfo[socket.id].room).emit('message',message);
@@ -135,7 +196,7 @@ io.on('connection', function(socket){
 
 	socket.emit('message', {
 		name: 'System',
-		text: 'Welcome to my chat app!</p><p> Type "/help" for user commands!',
+		text: 'Welcome!</p><p> Type <strong> "/help" </strong> for user commands!',
 		timestamp: moment().valueOf()
 	});
 
