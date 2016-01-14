@@ -1,4 +1,4 @@
-var PORT = process.env.PORT || 3001;
+var PORT = process.env.PORT || 3000;
 var express = require('express');
 var app = express();
 var http = require('http').Server(app);
@@ -37,6 +37,7 @@ function sendHelp(socket){
 		<ul><li> type "/currentUsers" for the names of current user in your chat room</li>\
 		<li>type "/clear" to clear the chat</li>\
 		<li>type "/roomHis" to display the message history of your current room.</li>\
+		<li>type "/myHis" to display the message history of your current display name.</li>\
 		<li> More commands are on the way!</p></li>',
 		timestamp: moment().valueOf()
 	});
