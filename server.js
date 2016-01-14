@@ -1,10 +1,29 @@
-var PORT = process.env.PORT || 3000;
+var PORT = process.env.PORT || 3001;
 var express = require('express');
 var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http); 
 
 var moment = require('moment');
+
+// added mongoDB and mongoose
+var mongoose = require('mongoose');
+
+mongoose.connect('mongodb://xuezhma:123@ds045785.mongolab.com:45785/chat', function(err) {
+    if (err) throw err;
+});
+
+var Schema = mongoose.Schema,
+    ObjectId = Schema.ObjectId;
+
+var messageSchema = new Schema({
+	room: String,
+	name: String,
+	text: String,
+	timestamp: String
+});
+
+var messageObject = mongoose.model('message', messageSchema);
 
 app.use(express.static(__dirname + '/public'));
 
@@ -51,6 +70,12 @@ function sendClear(socket){
 
 // user commands end here
 io.on('connection', function(socket){
+	messageObject.find({},function(err, messages){
+		if(err) throw err;
+
+		console.log(messages);
+	})
+	
 	console.log("User connected via socket!");
 
 	socket.on('disconnect',function(){
@@ -78,7 +103,7 @@ io.on('connection', function(socket){
 
 
 	socket.on('message', function(message){
-		console.log('Message receieved: ' + message.text + message.timestamp);
+		console.log('Message receieved: ' + message.text + " Time: " + moment.utc(moment().valueOf()).format('YYYY MMM Do, h:mm:ss'));
 
 		if (message.text === '/currentUsers') {
 			sendCurrentUsers(socket);
@@ -90,6 +115,19 @@ io.on('connection', function(socket){
 			message.timestamp = moment().valueOf();
 			io.to(clientInfo[socket.id].room).emit('message',message);
 			//socket.broadcast.emit('message',message);
+
+			var randomMessage = messageObject({
+				room: clientInfo[socket.id].room,
+				name: clientInfo[socket.id].name,
+				text: message.text,
+				timestamp: message.timestamp
+			});
+
+			randomMessage.save(function(err){
+				if(err) throw err;
+
+				console.log("message saved!");
+			});
 		}
 
 		
