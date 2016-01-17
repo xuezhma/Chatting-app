@@ -1,8 +1,13 @@
-var PORT = process.env.PORT || 3000;
+var PORT = process.env.PORT || 3001;
 var express = require('express');
 var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http); 
+var bodyParser = require('body-parser')
+// app.use(bodyParser.json());       // to support JSON-encoded bodies
+app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
+  extended: true
+})); 
 
 var moment = require('moment');
 
@@ -13,6 +18,7 @@ mongoose.connect('mongodb://xuezhma:123@ds045785.mongolab.com:45785/chat', funct
     if (err) throw err;
 });
 
+// Schema collection:
 var Schema = mongoose.Schema,
     ObjectId = Schema.ObjectId;
 
@@ -23,10 +29,20 @@ var messageSchema = new Schema({
 	timestamp: Number
 });
 
+var userSchema = new Schema({
+	email: String,
+	password: String,
+	name: String,
+	active: String
+});
+
 var messageObject = mongoose.model('message', messageSchema);
+var userObject = mongoose.model('user', userSchema);
+
 
 app.use(express.static(__dirname + '/public'));
 
+// socket.io for chat.html 
 var clientInfo = {};
 
 //user commands starts here
@@ -204,6 +220,26 @@ io.on('connection', function(socket){
 
 	
 });
+
+// JAXA for signup.html
+
+app.post('/signup', function(req, res){
+
+	var body = req.body;
+	var newUser = userObject({
+		email: body.email,
+		password: body.password
+	});
+
+	newUser.save(function(err){
+		if(err) throw err;
+
+		console.log("new user saved!");
+		res.sendFile('/public/signedup.html', {root: __dirname});
+	});
+
+});
+
 
 http.listen(PORT, function(){
 	console.log('Server started!');
