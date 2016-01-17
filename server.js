@@ -1,4 +1,4 @@
-var PORT = process.env.PORT || 3001;
+var PORT = process.env.PORT || 3000;
 var express = require('express');
 var app = express();
 var http = require('http').Server(app);
@@ -8,6 +8,8 @@ var bodyParser = require('body-parser')
 app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
   extended: true
 })); 
+
+var session = require('express-session');
 
 var moment = require('moment');
 
@@ -33,7 +35,8 @@ var userSchema = new Schema({
 	email: String,
 	password: String,
 	name: String,
-	active: String
+	active: String,
+	rank: String
 });
 
 var messageObject = mongoose.model('message', messageSchema);
@@ -42,7 +45,7 @@ var userObject = mongoose.model('user', userSchema);
 
 app.use(express.static(__dirname + '/public'));
 
-// socket.io for chat.html 
+// Socket.io for chat.html starts here 
 var clientInfo = {};
 
 //user commands starts here
@@ -220,15 +223,19 @@ io.on('connection', function(socket){
 
 	
 });
+// Socket ends here
 
-// JAXA for signup.html
+// RESTful API Starts here
 
+// for signup.html
 app.post('/signup', function(req, res){
 
 	var body = req.body;
 	var newUser = userObject({
 		email: body.email,
-		password: body.password
+		password: body.password,
+		active:'yes',
+		rank: 'user'
 	});
 
 	newUser.save(function(err){
@@ -239,6 +246,44 @@ app.post('/signup', function(req, res){
 	});
 
 });
+
+// for login.html
+// check if user has a unique display yet
+
+app.post('/login', function(req, res){
+
+	var body = req.body;
+	var email = body.email;
+	var password = body.password;
+
+	userObject.find({
+		email: email,
+		password: password
+	}, function(err, users){
+		if(err) throw err;
+
+		console.log(users);
+
+		if(users.length == 1 && users[0].password == password){
+			console.log("user info correct. should login");
+			//put user object in session
+			
+			res.sendFile('/public/welcome.html', {root: __dirname});
+		}
+
+	});
+
+
+});
+
+
+
+
+
+
+
+
+
 
 
 http.listen(PORT, function(){

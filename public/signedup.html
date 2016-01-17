@@ -4,11 +4,31 @@
 	<title>You Just Signed Up! </title>
 	<link rel="stylesheet" type="text/css" href="./css/bootstrap.min.css">
 	<link rel="stylesheet" type="text/css" href="./css/styles.css">
-</head>
-<body>
-<h4><a id="goback" href="/myprofile.html">My Profile</a> | <a id="goback" href="/index.html">Log Out</a></h4>
 
-<h1 class="text-center"><a id="goback" href="login.html">You just signed up. Go to login page now.</a></h1>
+	<script type="text/javascript">
+	// let's go to login page after 5 seconds.
+		var myVar = setInterval(myTimer, 1000);
+		var timer = 5;
+		function myTimer(){
+			
+			document.getElementById("goback").innerHTML = 'You just signed up. Going to the login page in ' + timer + ' seconds.';
+			timer--;
+			console.log(timer);
+			if (timer == 0){
+			window.location.href = 'login.html';
+		}
+		}
+		
+		
+	
+</script>
+</head>
+
+<body>
+<!-- <h4><a id="goback" href="/myprofile.html">My Profile</a> | <a id="goback" href="/index.html">Log Out</a></h4> -->
+
+<h2 class="text-center vertical-center" id='goback'> You just signed up. Going to the login page in 5 seconds.</h2>
+
 
 
 </body>
