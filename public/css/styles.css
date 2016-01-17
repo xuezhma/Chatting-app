@@ -3,6 +3,7 @@ body {
 	background-repeat: no-repeat;
     background-attachment: fixed;
     /*background-position: center;*/ 
+    padding-left: 10px;
 }
 
 .vertical-center {
@@ -19,3 +20,21 @@ h1{
 .messages p {
 	margin: 6px 0;
 }
+
+#goback {
+	/*width: 100px;
+   opacity: 0.6;*/
+   /*background-color: white;*/
+   /*font-weight: bold;*/
+   color: white;
+   /*padding: 5px;
+   cursor: pointer;*/
+   /*-webkit-transition: all 0.1s;
+   transition: all 0.1s;*/
+   /*border-radius: 6px; 
+   -moz-border-radius: 6px; 
+   -webkit-border-radius: 6px; */
+ 
+}
+
+
