@@ -6,11 +6,34 @@
 	<link rel="stylesheet" type="text/css" href="./css/styles.css">
 </head>
 <body>
-<h4><a id="goback" href="/myprofile.html">My Profile</a> | <a id="goback" href="/index.html">Log Out</a></h4>
+<h4><a id="goback" href="/displayname.html">My Profile</a> | <a id="goback" href="/index.html">Log Out</a></h4>
 
-<h1 class="text-center">Welcome + User Display Name</h1>
+<h1 class="result text-center">Welcome + User Display Name</h1>
 
 <h1 class="text-center"> Join Chat and stuff</h1>
+<form action='newname' method="post">
+	<div class="vertical-center">
+	<div class="container">
+	<div class="row">
+	<div class="col-md-4 col-md-offset-4 well">
+	<h3 class="text-center">Chose a Display Name</h3><br>
+		<div class="form-group">
+			<label>Display Name: </label>
+			<div class="input-group">
+			<span class="input-group-addon">
+				<i class="glyphicon glyphicon-user"></i>
+			</span>
+			<input class="form-control" type="text" name="name" required>
+			</div>
+			<br>
+			<input class="btn btn-primary btn-block" type="submit">
+		
 
+		</div>
+	</div>
+	</div>
+	</div>
+	</div>
 </body>
+
 </html>

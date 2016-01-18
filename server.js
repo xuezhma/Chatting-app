@@ -1,6 +1,40 @@
+// TODO: 
+//	check if a registered user have a display name yet when he's loggin in
+//	menu bar
+//  change password
+//	check if a email is already used on sign up
+//	return something when one tried to loggin with a wrong account
+//	email configuration	on new user
+//	one more attribute on message objects: senderEmail,	null if it's sent by guest user
+//	clear message history of a name once a registered user declear the name
+//	add a user command for registered user to return all message of the user
 var PORT = process.env.PORT || 3000;
 var express = require('express');
 var app = express();
+// server session
+var expressSession = require('express-session');
+var cookieParser = require('cookie-parser');
+// must use cookieParser before session
+app.use(cookieParser());
+app.set('trust proxy', 1) 
+app.use(expressSession({
+ 	secret: 'flyingkitten', 
+ 	resave: false,
+ 	saveUninitialized: true,
+	cookie: { 
+		secure: true,
+		maxAge: 24 * 60 * 60 * 1000
+	}
+}));
+// client session
+var sessions = require('client-sessions');
+app.use(sessions({
+	cookieName: 'mySession', // cookie name dictates the key name added to the request object 
+  	secret: 'anotherflyingkitten', // should be a large unguessable string 
+  	duration: 24 * 60 * 60 * 1000, // how long the session will stay valid in ms 
+  	activeDuration: 1000 * 60 * 5 // if expiresIn < activeDuration, the session will be extended by activeDuration milliseconds
+}));
+
 var http = require('http').Server(app);
 var io = require('socket.io')(http); 
 var bodyParser = require('body-parser')
@@ -9,7 +43,7 @@ app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
   extended: true
 })); 
 
-var session = require('express-session');
+
 
 var moment = require('moment');
 
@@ -247,6 +281,31 @@ app.post('/signup', function(req, res){
 
 });
 
+// for welcome.html
+// declear a unique name as a registered user's pork 
+
+app.post('/newname',function(req,res){
+	var body = req.body;
+	var name = body.name;
+	var session = req.mySession;
+	console.log("session!!:");
+	console.log(session);
+	userObject.findOne({
+		email:session.email
+	}, function(err, founduser){
+		if (err) throw err;
+
+		founduser.name = name;
+
+		founduser.save(function(err){
+			if(err) throw err;
+
+			console.log("updated displayname!");
+		});
+	});
+
+});
+
 // for login.html
 // check if user has a unique display yet
 
@@ -262,13 +321,24 @@ app.post('/login', function(req, res){
 	}, function(err, users){
 		if(err) throw err;
 
-		console.log(users);
+		//console.log(users);
 
 		if(users.length == 1 && users[0].password == password){
 			console.log("user info correct. should login");
-			//put user object in session
-			
-			res.sendFile('/public/welcome.html', {root: __dirname});
+			var session = req.session;
+			req.mySession = users[0];
+
+			// keep track of how many users are logged in on server
+			if(session.users){
+				session.users.push(users[0]);
+			}else{
+				session.users = users;
+			}
+			console.log(session);
+			//console.log(req);
+		
+			res.send('<script>window.location.href = "welcome.html?email=' + users[0].email + '"</script>');
+			//res.sendFile('/public/welcome.html?email='+sess.user.email, {root: __dirname});
 		}
 
 	});
