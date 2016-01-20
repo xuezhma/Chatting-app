@@ -1,9 +1,6 @@
 // TODO: 
-//	check if a registered user have a display name yet when he's loggin in
-//	menu bar
-//  change password
-//	check if a email is already used on sign up
-//	return something when one tried to loggin with a wrong account
+//	single page app
+//	registered user may join multiple rooms, one room on tab
 //	email configuration	on new user
 //	one more attribute on message objects: senderEmail,	null if it's sent by guest user
 //	clear message history of a name once a registered user declear the name
@@ -265,19 +262,31 @@ io.on('connection', function(socket){
 app.post('/signup', function(req, res){
 
 	var body = req.body;
-	var newUser = userObject({
-		email: body.email,
-		password: body.password,
-		active:'yes',
-		rank: 'user'
-	});
 
-	newUser.save(function(err){
-		if(err) throw err;
+	userObject.findOne({
+		email:body.email
+	}, function(err,founduser){
+		if (err) throw err;
 
-		console.log("new user saved!");
-		res.sendFile('/public/signedup.html', {root: __dirname});
-	});
+		if (founduser) {
+			res.send('<script>alert("Sorry, the email is already used."); window.location.href = "/signup.html"</script>');
+		}else{
+			var newUser = userObject({
+			email: body.email,
+			password: body.password,
+			active:'yes',
+			rank: 'user'
+		});
+
+		newUser.save(function(err){
+			if(err) throw err;
+
+			console.log("new user saved!");
+			res.sendFile('/public/signedup.html', {root: __dirname});
+		});
+		}
+
+	})
 
 });
 
@@ -305,6 +314,51 @@ app.post('/newname',function(req,res){
 	});
 
 });
+
+// change password
+app.post('/newpassword',function(req,res){
+	var body = req.body;
+	var email = body.email;
+	var oldpassword = body.oldpassword;
+	var newpassword = body.newpassword;
+	var session = req.mySession;
+	console.log("session!!:");
+	console.log(session);
+	userObject.findOne({
+		email:session.email,
+		password: oldpassword
+	}, function(err, founduser){
+		console.log(founduser);
+		if (err) throw err;
+		if(founduser == null){
+			var tosend = '<script>alert("Wrong Password."); window.location.href = "welcome.html?email=' + session.email;
+			if(session.name != 'undefined'){
+				tosend += '&name=';
+				tosend += session.name;
+			}
+			tosend += '"</script>';
+			console.log(tosend);
+			res.send(tosend);
+		}else{
+			founduser.password = newpassword;
+
+			founduser.save(function(err){
+				if(err) throw err;
+
+				console.log("updated password!");
+				var tosend = '<script>alert("Password updated."); window.location.href = "welcome.html?email=' + session.email;
+				if(session.name != 'undefined'){
+					tosend += '&name=';
+					tosend += session.name;
+				}
+				tosend += '"</script>';
+				res.send(tosend);
+			});
+		}
+	});
+
+});
+
 
 // for login.html
 // check if user has a unique display yet
@@ -336,9 +390,16 @@ app.post('/login', function(req, res){
 			}
 			console.log(session);
 			//console.log(req);
-		
-			res.send('<script>window.location.href = "welcome.html?email=' + users[0].email + '"</script>');
+			var tosend = '<script>window.location.href = "welcome.html?email=' + users[0].email;
+			if(users[0].name != 'undefined'){
+				tosend += '&name=';
+				tosend += users[0].name;
+			}
+			tosend += '"</script>';
+			res.send(tosend);
 			//res.sendFile('/public/welcome.html?email='+sess.user.email, {root: __dirname});
+		}else{
+			res.send('<script>alert("Sorry, invaild login."); window.location.href = "/login.html"</script>');
 		}
 
 	});
