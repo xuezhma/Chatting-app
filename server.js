@@ -1,6 +1,5 @@
 // TODO: 
-//	single page app
-//	registered user may join multiple rooms, one room on tab
+//	need fix: ng-view creates duplicate sockets 
 //	email configuration	on new user
 //	one more attribute on message objects: senderEmail,	null if it's sent by guest user
 //	clear message history of a name once a registered user declear the name

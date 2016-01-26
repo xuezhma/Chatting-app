@@ -3,7 +3,7 @@
 <p>This project is a practice to my self-studying.</p>
 <p>It is a web-based real time chatting app in node.js.</p>
 <p>Demo on Heroku: https://safe-shore-4614.herokuapp.com/ </p>
-<p>Used tools include: Express, Socket.io, Mongodb, Mongoose, express-session, cookie-parser, client-sessions, Moment.js, jQuery, and Bootstrap</p>
+<p>Used tools include: Express, AngularJS, Socket.io, Mongodb, Mongoose, express-session, cookie-parser, client-sessions, Moment.js, jQuery, and Bootstrap</p>
 
 <h2>Instruction for Developers</h2>
 
