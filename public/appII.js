@@ -35,18 +35,25 @@ myApp.config(function($routeProvider){
 	})
 });
 
-myApp.controller('secondController', ['$scope', '$filter', '$timeout', '$http', '$log', '$location', function($scope, $filter, $timeout, $http, $log, $location){
-	
-}]);
-
 
 myApp.controller('mainController', ['$scope', '$rootScope', '$filter', '$timeout', '$http', '$log', function($scope, $rootScope, $filter, $timeout, $http, $log){
-	$scope.iframe = "chat.html?name=name&room=Room+Name";
+	
+	$scope.$watch('$root.room', function(newValue, oldValue){
+		console.info('Changed!');
+		console.log('Old: ' + oldValue);
+		console.log('New: ' + newValue);
+		if(newValue!=undefined && newValue.length != 0){
+			$rootScope.iframe = 'chat.html?name=' + $scope.username + '&room=' + $rootScope.room;
+		}
+		$log.info($rootScope.iframe);
+	});
+
 	$scope.addroom = function(){
 	
 	}
-	$rootScope.inchat = 0;
-	$scope.room = "";
+	$rootScope.inchat;
+	$rootScope.room = '';
+	
 	$scope.username = '';
 	// if a user is logged in, he sees tabs like 'change password'
 	// if not, he sees tabs like 'Log in'

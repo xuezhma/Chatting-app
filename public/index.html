@@ -23,8 +23,8 @@
 		</div>
 
 		<ul  class="nav navbar-nav navbar-right">
-			
-			<li><a ng-click="home = 0" href="#/join">Use As A Guest</a></li>
+			<li><a ng-click="home = 1; $root.inchat = 0" ng-show="$root.inchat===1" href="#/">Leave Room</a></li>
+			<li><a ng-click="home = 0" ng-hide="$root.inchat===1" href="#/join">Use As A Guest</a></li>
             <li><a ng-click="home = 0" href="#/login">Sign In </a></li>
             <li><a ng-click="home = 0" href="#/signup">Sign Up</a></li>
 
@@ -44,7 +44,7 @@
 
 
 
-<div ng-hide="home==0" class="container">
+<div ng-hide="home===0" class="container">
   <br>
   <div id="myCarousel" class="carousel slide" data-ride="carousel">
     <!-- Indicators -->
@@ -94,6 +94,10 @@
 	
 
 </div>
+<footer>
+  <p>Posted by: Hege Refsnes</p>
+  <p>Contact information: <a href="mailto:someone@example.com">someone@example.com</a>.</p>
+</footer>
 </body>
 
 </html>

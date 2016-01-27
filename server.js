@@ -1,5 +1,4 @@
 // TODO: 
-//	fix iframe link
 //	email configuration	on new user
 //	one more attribute on message objects: senderEmail,	null if it's sent by guest user
 //	clear message history of a name once a registered user declear the name

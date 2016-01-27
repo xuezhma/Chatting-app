@@ -24,15 +24,51 @@ myApp.config(function($routeProvider){
 		controller: 'mainController'
 	})
 
-	.when('/fifth',{ 
-		templateUrl: 'chat.html',
+	.when('/fifth',{
+		templateUrl: 'pages/chatII.html',
 		controller: 'mainController'
 	})
 });
 
-myApp.controller('mainController', ['$scope', '$filter', '$timeout', '$http', '$log', function($scope, $filter, $timeout, $http, $log){
+myApp.controller('mainController', ['$scope', '$rootScope', '$location', '$filter', '$timeout', '$http', '$log', function($scope, $rootScope, $location, $filter, $timeout, $http, $log){
+	$rootScope.iframe = 'chat.html';
+	$rootScope.inchat;
+	$scope.$watch('$root.username', function(newValue, oldValue){
+		console.info('Changed!');
+		console.log('Old: ' + oldValue);
+		console.log('New: ' + newValue);
+		if(newValue!=undefined && newValue.length != 0){
+			$rootScope.iframe = 'chat.html?name=' + $rootScope.username + '&room=' + $rootScope.room;
+		}
+		$log.info($rootScope.iframe);
+	});
+
+	$scope.$watch('$root.room', function(newValue, oldValue){
+		console.info('Changed!');
+		console.log('Old: ' + oldValue);
+		console.log('New: ' + newValue);
+		if(newValue!=undefined && newValue.length != 0){
+			$rootScope.iframe = 'chat.html?name=' + $rootScope.username + '&room=' + $rootScope.room;
+		}
+		$log.info($rootScope.iframe);
+	});
+
+	$rootScope.room = '';
+	$rootScope.username = '';
 	$scope.home = 1;
-	$scope.room = 'FAKEROOM';
+	$scope.inchat = 0;
+	if($location.$$url.length>1){
+		$scope.home = 0;
+	}
+	$scope.$watch('$root.room', function(newValue, oldValue){
+		console.info('Changed!');
+		console.log('Old: ' + oldValue);
+		console.log('New: ' + newValue);
+		if(newValue!=undefined && newValue.length != 0){
+			$rootScope.iframe = 'chat.html?name=' + $scope.username + '&room=' + $rootScope.room;
+		}
+		$log.info($rootScope.iframe);
+	});
 	
 	
 

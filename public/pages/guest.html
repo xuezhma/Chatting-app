@@ -10,7 +10,7 @@
 			<span class="input-group-addon">
 				<i class="glyphicon glyphicon-user"></i>
 			</span>
-			<input class="form-control" type="text" name="name" required>
+			<input class="form-control" ng-model="$root.username" type="text" name="name" required>
 			</div>
 			<br><br>
 			<label>Room to Enter: </label>
@@ -18,11 +18,12 @@
 			<span class="input-group-addon">
 				<i class="glyphicon glyphicon-home"></i>
 			</span>
-			<input class="form-control" type="text" name="room" required>
+			<input class="form-control" ng-model="$root.room" type="text" name="room" required>
 			</div><br>
 			
-			<input class="btn btn-primary btn-block" type="submit" value="Join as a Guest"><br>
-			<p>Want more porks? <a href="/signup.html">Sign up</a> or <a href="/login.html">Login</a> now.</p>
+			<a class="btn btn-primary btn-block" ng-click="$root.inchat=1" href="#/fifth">Real Join Chat</a>
+			<!-- <input class="btn btn-primary btn-block" type="submit" value="Join as a Guest"> --><br>
+			<p>Want more porks? <a ng-click="home = 0" href="#/signup">Sign Up</a> or <a ng-click="home = 0" href="#/login">Sign In </a> now.</p>
 		
 		</form>
 
