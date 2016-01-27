@@ -30,7 +30,7 @@ myApp.config(function($routeProvider){
 	})
 
 	.when('/fifth',{
-		templateUrl: 'chat.html',
+		templateUrl: 'pages/chatII.html',
 		controller: 'mainController'
 	})
 });
@@ -40,9 +40,14 @@ myApp.controller('secondController', ['$scope', '$filter', '$timeout', '$http', 
 }]);
 
 
-myApp.controller('mainController', ['$scope', '$filter', '$timeout', '$http', '$log', function($scope, $filter, $timeout, $http, $log){
-	$scope.inchat = 1;
-	$scope.room = 'FAKEROOM';
+myApp.controller('mainController', ['$scope', '$rootScope', '$filter', '$timeout', '$http', '$log', function($scope, $rootScope, $filter, $timeout, $http, $log){
+	$scope.iframe = "chat.html?name=name&room=Room+Name";
+	$scope.addroom = function(){
+	
+	}
+	$rootScope.inchat = 0;
+	$scope.room = "";
+	$scope.username = '';
 	// if a user is logged in, he sees tabs like 'change password'
 	// if not, he sees tabs like 'Log in'
 	if(getQueryVariable('email') == undefined){
@@ -51,8 +56,10 @@ myApp.controller('mainController', ['$scope', '$filter', '$timeout', '$http', '$
 		$scope.login = 1;
 		$scope.email = getQueryVariable('email');
 		if(getQueryVariable('name') == undefined){
+			$scope.username = $scope.email;
 			$scope.name = 'We will use your email as your display name before you set one.';
 		}else{
+			$scope.username = getQueryVariable('name');
 			$scope.name = 'Welcome. ' + getQueryVariable('name') +'!';
 		}
 	}

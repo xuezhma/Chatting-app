@@ -19,22 +19,21 @@
         
 
 		<div class="navbar-header">
-			<a ng-click="inchat=0" class="navbar-brand" href="#/"><i class="fa fa-home"></i> Home</a>
+			<a ng-click="root.inchat=0" class="navbar-brand" href="#/"><i class="fa fa-home"></i> Home</a>
 		</div>
 
 		<ul  class="nav navbar-nav navbar-right">
 			
-			<li><a ng-show="inchat===0"href="#/third">Join a Chat</a></li>
-            <li><a ng-if="inchat===1" href="#/fifth">{{room}}</a></li>
-            <li><a ng-click="inchat=0" href="#/second">Set Display Name</a></li>
-            <li><a ng-click="inchat=1" href="#/fourth">Change Password</a></li>
-            <li><a ng-click="inchat=0" href="/">Log Out</a></li>
+			<li><a ng-hide="root.inchat==1" href="#/third">Join a Chat</a></li>
+            <li><a ng-show="root.inchat==1" ng-click="root.inchat=0" href="#/">Leave Room</a></li>
+            <li><a ng-click="root.inchat=0" href="#/second">Set Display Name</a></li>
+            <li><a ng-click="root.inchat=0" href="#/fourth">Change Password</a></li>
+            <li><a ng-click="root.inchat=0" href="/">Log Out</a></li>
 
 		</ul>
 	</div>
 	</nav>
 </header>
-
 
 <div class="container">
 	<div ng-view></div>
