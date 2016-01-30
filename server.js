@@ -309,6 +309,14 @@ app.post('/newname',function(req,res){
 
 			console.log("updated displayname!");
 		});
+
+		var tosend = '<script>alert("Displayname updated."); window.location.href = "welcome.html?email=' + session.email;
+			session.name = name;
+			tosend += '&name=';
+			tosend += session.name;
+			
+			tosend += '"</script>';
+			res.send(tosend);
 	});
 
 });
