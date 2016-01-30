@@ -23,7 +23,7 @@ myApp.config(function($routeProvider){
 		templateUrl: 'pages/signup.html',
 		controller: 'mainController'
 	})
-
+	// there is no fifth right now
 	.when('/fifth',{
 		templateUrl: 'pages/chatII.html',
 		controller: 'mainController'
@@ -31,13 +31,13 @@ myApp.config(function($routeProvider){
 });
 
 myApp.controller('mainController', ['$scope', '$rootScope', '$location', '$filter', '$timeout', '$http', '$log', function($scope, $rootScope, $location, $filter, $timeout, $http, $log){
-	$rootScope.iframe = 'chat.html';
+	
 	$rootScope.inchat;
 	$scope.$watch('$root.username', function(newValue, oldValue){
 		console.info('Changed!');
 		console.log('Old: ' + oldValue);
 		console.log('New: ' + newValue);
-		if(newValue!=undefined && newValue.length != 0){
+		if(typeof(newValue)!==undefined && newValue.length !==0){
 			$rootScope.iframe = 'chat.html?name=' + $rootScope.username + '&room=' + $rootScope.room;
 		}
 		$log.info($rootScope.iframe);
@@ -47,7 +47,7 @@ myApp.controller('mainController', ['$scope', '$rootScope', '$location', '$filte
 		console.info('Changed!');
 		console.log('Old: ' + oldValue);
 		console.log('New: ' + newValue);
-		if(newValue!=undefined && newValue.length != 0){
+		if(typeof(newValue)!==undefined && newValue.length !==0){
 			$rootScope.iframe = 'chat.html?name=' + $rootScope.username + '&room=' + $rootScope.room;
 		}
 		$log.info($rootScope.iframe);
@@ -60,15 +60,7 @@ myApp.controller('mainController', ['$scope', '$rootScope', '$location', '$filte
 	if($location.$$url.length>1){
 		$scope.home = 0;
 	}
-	$scope.$watch('$root.room', function(newValue, oldValue){
-		console.info('Changed!');
-		console.log('Old: ' + oldValue);
-		console.log('New: ' + newValue);
-		if(newValue!=undefined && newValue.length != 0){
-			$rootScope.iframe = 'chat.html?name=' + $scope.username + '&room=' + $rootScope.room;
-		}
-		$log.info($rootScope.iframe);
-	});
+	
 	
 	
 

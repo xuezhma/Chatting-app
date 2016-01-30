@@ -3,6 +3,8 @@
 //	one more attribute on message objects: senderEmail,	null if it's sent by guest user
 //	clear message history of a name once a registered user declear the name
 //	add a user command for registered user to return all message of the user
+//  in case ppl refresh page for fun, check hash/session on load, store room name in session 
+//  custom 404 page
 var PORT = process.env.PORT || 3000;
 var express = require('express');
 var app = express();
