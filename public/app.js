@@ -1,7 +1,8 @@
 var name = getQueryVariable('name') || 'Guest';
 var room = getQueryVariable('room') || 'Public Room';
+var email = getQueryVariable('email') || 'guest';
 var socket = io();
-console.log(name + " wants to join room: " + room);
+console.log(name + "(" + email + ")" + " wants to join room: " + room);
 var $room = jQuery('.room-title');
 $room.append(room);
 
@@ -9,7 +10,8 @@ socket.on('connect', function(){
 	console.log('Connected to socket.io server!');
 	socket.emit('joinRoom', {
 		name: name,
-		room: room
+		room: room,
+		email: email
 	});
 });
 	

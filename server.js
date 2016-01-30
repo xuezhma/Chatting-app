@@ -1,11 +1,9 @@
 // TODO: 
 //	email configuration	on new user
-//	one more attribute on message objects: senderEmail,	null if it's sent by guest user
-//	clear message history of a name once a registered user declear the name
-//	add a user command for registered user to return all message of the user
-//  in case ppl refresh page for fun, check hash/session on load, store room name in session 
-//  custom 404 page
-var PORT = process.env.PORT || 3000;
+//	check if a display name is avaiable when ppl choose it
+//	personal chat history
+//	offline message box
+var PORT = process.env.PORT || 3001;
 var express = require('express');
 var app = express();
 // server session
@@ -56,6 +54,8 @@ var Schema = mongoose.Schema,
     ObjectId = Schema.ObjectId;
 
 var messageSchema = new Schema({
+	email: String,
+	font: String,
 	room: String,
 	name: String,
 	text: String,
@@ -232,9 +232,10 @@ io.on('connection', function(socket){
 				room: clientInfo[socket.id].room,
 				name: clientInfo[socket.id].name,
 				text: message.text,
-				timestamp: message.timestamp
+				timestamp: message.timestamp,
+				email: clientInfo[socket.id].email
 			});
-
+			console.log(randomMessage);
 			randomMessage.save(function(err){
 				if(err) throw err;
 
@@ -258,7 +259,15 @@ io.on('connection', function(socket){
 
 // RESTful API Starts here
 
-// for signup.html
+// get user info from client session
+app.get('/welcome', function(req, res){
+	var session = req.mySession;
+	console.log("get:");
+	console.log(session);
+	res.status(200).json(session);
+});
+
+// for new user signup
 app.post('/signup', function(req, res){
 
 	var body = req.body;
@@ -269,7 +278,7 @@ app.post('/signup', function(req, res){
 		if (err) throw err;
 
 		if (founduser) {
-			res.send('<script>alert("Sorry, the email is already used."); window.location.href = "/signup.html"</script>');
+			res.status(200).send('<script>alert("Sorry, the email is already used."); window.location.href = "/#/signup"</script>');
 		}else{
 			var newUser = userObject({
 			email: body.email,
@@ -282,7 +291,7 @@ app.post('/signup', function(req, res){
 			if(err) throw err;
 
 			console.log("new user saved!");
-			res.sendFile('/public/signedup.html', {root: __dirname});
+			res.status(200).sendFile('/public/signedup.html', {root: __dirname});
 		});
 		}
 
@@ -318,7 +327,7 @@ app.post('/newname',function(req,res){
 			tosend += session.name;
 			
 			tosend += '"</script>';
-			res.send(tosend);
+			res.status(200).send(tosend);
 	});
 
 });
@@ -346,7 +355,7 @@ app.post('/newpassword',function(req,res){
 			}
 			tosend += '"</script>';
 			console.log(tosend);
-			res.send(tosend);
+			res.status(200).send(tosend);
 		}else{
 			founduser.password = newpassword;
 
@@ -360,7 +369,7 @@ app.post('/newpassword',function(req,res){
 					tosend += session.name;
 				}
 				tosend += '"</script>';
-				res.send(tosend);
+				res.status(200).send(tosend);
 			});
 		}
 	});
@@ -368,8 +377,7 @@ app.post('/newpassword',function(req,res){
 });
 
 
-// for login.html
-// check if user has a unique display yet
+// for user sign in, put his info into sessions of both server and client 
 
 app.post('/login', function(req, res){
 
@@ -404,10 +412,10 @@ app.post('/login', function(req, res){
 				tosend += users[0].name;
 			}
 			tosend += '"</script>';
-			res.send(tosend);
+			res.status(200).send(tosend);
 			//res.sendFile('/public/welcome.html?email='+sess.user.email, {root: __dirname});
 		}else{
-			res.send('<script>alert("Sorry, invaild login."); window.location.href = "/login.html"</script>');
+			res.status(200).send('<script>alert("Sorry, invaild login."); window.location.href = "/login.html"</script>');
 		}
 
 	});

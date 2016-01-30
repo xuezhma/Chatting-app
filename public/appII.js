@@ -28,22 +28,29 @@ myApp.config(function($routeProvider){
 		templateUrl: 'pages/fourth.html',
 		controller: 'mainController'
 	})
-
+	// chat room page
 	.when('/fifth',{
 		templateUrl: 'pages/chatII.html',
 		controller: 'mainController'
 	})
+	// in case ppl change hash for fun
+	.when('/404', {
+		templateUrl: 'pages/ops.html',
+		controller: 'mainController'
+	})
+
+	.otherwise({redirectTo: '/404'})
 });
 
 
-myApp.controller('mainController', ['$scope', '$rootScope', '$filter', '$timeout', '$http', '$log', function($scope, $rootScope, $filter, $timeout, $http, $log){
+myApp.controller('mainController', ['$scope', '$rootScope', '$location', '$filter', '$timeout', '$http', '$log', function($scope, $rootScope, $location, $filter, $timeout, $http, $log){
 	
 	$scope.$watch('$root.room', function(newValue, oldValue){
 		console.info('Changed!');
 		console.log('Old: ' + oldValue);
 		console.log('New: ' + newValue);
 		if(typeof(newValue)!==undefined && newValue.length !==0){
-			$rootScope.iframe = 'chat.html?name=' + $scope.username + '&room=' + $rootScope.room;
+			$rootScope.iframe = 'chat.html?name=' + $rootScope.session.name + '&room=' + $rootScope.room +'&email=' + $rootScope.session.email;
 		}
 		$log.info($rootScope.iframe);
 	});
@@ -55,24 +62,32 @@ myApp.controller('mainController', ['$scope', '$rootScope', '$filter', '$timeout
 	$rootScope.room = '';
 	
 	$scope.username = '';
-	// if a user is logged in, he sees tabs like 'change password'
-	// if not, he sees tabs like 'Log in'
-	if(typeof(getQueryVariable('email')) === undefined){
-		$scope.login = 0;
-	}else{
-		$scope.login = 1;
-		$scope.email = getQueryVariable('email');
-		if(typeof(getQueryVariable('name')) === undefined){
-			$scope.username = $scope.email;
-			$scope.name = 'We will use your email as your display name before you set one.';
-		}else{
-			$scope.username = getQueryVariable('name');
-			$scope.name = 'Welcome. ' + getQueryVariable('name') +'!';
-		}
-	}
+	$scope.init = function () {
+		// get user info from client session onload
+		// if there is no session, kick him to sign in page
+		$http.get('/welcome')
+        .success(function(data) {
+            console.log("User info: " + data);
+            $rootScope.session = data;
+            console.log("User info: " + $rootScope.session.name);
+            if(typeof($rootScope.session.name) === undefined){
+	    		$rootScope.session.name = $rootScope.session.email; 
+	    		$scope.name = 'We will use your email as your display name before you set one.';
+	    	}else{
+	    		$scope.name = 'Welcome! ' + $rootScope.session.name;
+	    	}
+        })
 
-	
-	
+        .error(function(data) {
+            console.log('Error: ' + data);
+      		// bye
+            window.location.href = "../#/login";
+        });
+
+	    
+
+		
+	}
 	
 
 	
