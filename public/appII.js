@@ -73,7 +73,7 @@ myApp.controller('mainController', ['$scope', '$rootScope', '$filter', '$timeout
 
 	
 	
-	$rootScope.iframe = 'chat.html?name=' + $scope.username;
+	
 
 	
 

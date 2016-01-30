@@ -4,15 +4,22 @@ var socket = io();
 console.log(name + " wants to join room: " + room);
 var $room = jQuery('.room-title');
 $room.append(room);
-
-socket.on('connect', function(){
-	console.log('Connected to socket.io server!');
-	socket.emit('joinRoom', {
-		name: name,
-		room: room
+//$room.text(room);
+var connected = 0;
+if(connected === 0){
+	socket.on('connect', function(){
+		console.log('Connected to socket.io server!');
+		socket.emit('joinRoom', {
+			name: name,
+			room: room
+		});
 	});
-});
-	
+	connected = 1;
+	console.log('Connected: ');
+	console.log(connected);
+}
+
+
 socket.on('message',function(message){
 	var momentTimesstamp = moment.utc(message.timestamp);
 	console.log('New message: ');
