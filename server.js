@@ -3,7 +3,7 @@
 //	check if a display name is avaiable when guests choose it
 //	personal chat history
 //	offline message box
-var PORT = process.env.PORT || 3001;
+var PORT = process.env.PORT || 3000;
 var express = require('express');
 var app = express();
 // server session
@@ -33,7 +33,7 @@ app.use(sessions({
 var http = require('http').Server(app);
 var io = require('socket.io')(http); 
 var bodyParser = require('body-parser')
-// app.use(bodyParser.json());       // to support JSON-encoded bodies
+app.use(bodyParser.json());       // to support JSON-encoded bodies
 app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
   extended: true
 })); 
