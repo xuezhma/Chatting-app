@@ -5,6 +5,38 @@ var myApp = angular.module('myApp', ['ngRoute']);
 // }]);
 
 
+// form validation
+// check if a display name is claimed by a registered user when ppl want to use it 
+myApp.directive('nameDirective', ['$http', '$log', function($http, $log) {
+    return {
+        require: 'ngModel',
+        link: function(scope, element, attr, mCtrl) {
+            function myValidation(value) {
+                if (value.length > 0) {
+                	$http.post('/displayname', {name: value})
+	            	.success(function(data){
+	            		console.log(data);
+	            		if(data == 'available'){
+	            			mCtrl.$setValidity('charE', true);
+	            		}else{
+	            			mCtrl.$setValidity('charE', false);
+	            		}
+	            	})
+	            	.error(function(data){
+	            		$log.error('Error: ' + data);
+	            		mCtrl.$setValidity('charE', false);
+	            	});
+                    
+                } else {
+                    mCtrl.$setValidity('charE', false);
+                }
+                return value;
+            }
+            mCtrl.$parsers.push(myValidation);
+        }
+    };
+}]);
+
 // SPA routing 
 myApp.config(function($routeProvider){
 	$routeProvider
@@ -69,8 +101,13 @@ myApp.controller('mainController', ['$scope', '$rootScope', '$location', '$filte
         .success(function(data) {
             console.log("User info: " + data);
             $rootScope.session = data;
-            console.log("User info: " + $rootScope.session.name);
-            if(typeof($rootScope.session.name) === undefined){
+            console.log("User infoII: " + $rootScope.session.email);
+            if ($rootScope.session.email === undefined){
+            	console.log("wow");
+            	window.location.href = "../#/login";
+            }
+
+            if($rootScope.session.name === undefined){
 	    		$rootScope.session.name = $rootScope.session.email; 
 	    		$scope.name = 'We will use your email as your display name before you set one.';
 	    	}else{

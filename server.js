@@ -1,6 +1,6 @@
 // TODO: 
 //	email configuration	on new user
-//	check if a display name is avaiable when ppl choose it
+//	check if a display name is avaiable when guests choose it
 //	personal chat history
 //	offline message box
 var PORT = process.env.PORT || 3001;
@@ -259,6 +259,26 @@ io.on('connection', function(socket){
 
 // RESTful API Starts here
 
+// check if a display name is avaiable
+app.post('/displayname', function(req, res){
+	var name = req.body.name;
+	console.log(req.body.name);
+	userObject.find({
+		name: name
+	}, function(err, founduser){
+		if (err) throw err;
+
+		if(founduser.length > 0){
+			console.log(founduser);
+			console.log("unavailable");
+			res.status(200).send("unavailable");
+		}else{
+			console.log("avaiable");
+			res.status(200).send("available");
+		}
+	})
+})
+
 // get user info from client session
 app.get('/welcome', function(req, res){
 	var session = req.mySession;
@@ -321,13 +341,9 @@ app.post('/newname',function(req,res){
 			console.log("updated displayname!");
 		});
 
-		var tosend = '<script>alert("Displayname updated."); window.location.href = "welcome.html?email=' + session.email;
-			session.name = name;
-			tosend += '&name=';
-			tosend += session.name;
+		var tosend = '<script>alert("Displayname updated."); window.location.href = "welcome.html"</script>';
 			
-			tosend += '"</script>';
-			res.status(200).send(tosend);
+		res.status(200).send(tosend);
 	});
 
 });
@@ -348,13 +364,8 @@ app.post('/newpassword',function(req,res){
 		console.log(founduser);
 		if (err) throw err;
 		if(founduser == null){
-			var tosend = '<script>alert("Wrong Password."); window.location.href = "welcome.html?email=' + session.email;
-			if(session.name != 'undefined'){
-				tosend += '&name=';
-				tosend += session.name;
-			}
-			tosend += '"</script>';
-			console.log(tosend);
+			var tosend = '<script>alert("Wrong password."); window.location.href = "welcome.html"</script>';
+
 			res.status(200).send(tosend);
 		}else{
 			founduser.password = newpassword;
@@ -363,12 +374,8 @@ app.post('/newpassword',function(req,res){
 				if(err) throw err;
 
 				console.log("updated password!");
-				var tosend = '<script>alert("Password updated."); window.location.href = "welcome.html?email=' + session.email;
-				if(session.name != 'undefined'){
-					tosend += '&name=';
-					tosend += session.name;
-				}
-				tosend += '"</script>';
+				var tosend = '<script>alert("Password updated."); window.location.href = "welcome.html"</script>';
+
 				res.status(200).send(tosend);
 			});
 		}
@@ -406,16 +413,12 @@ app.post('/login', function(req, res){
 			}
 			console.log(session);
 			//console.log(req);
-			var tosend = '<script>window.location.href = "welcome.html?email=' + users[0].email;
-			if(users[0].name != 'undefined'){
-				tosend += '&name=';
-				tosend += users[0].name;
-			}
-			tosend += '"</script>';
+			var tosend = '<script>window.location.href = "welcome.html"</script>';
+
 			res.status(200).send(tosend);
 			//res.sendFile('/public/welcome.html?email='+sess.user.email, {root: __dirname});
 		}else{
-			res.status(200).send('<script>alert("Sorry, invaild login."); window.location.href = "/login.html"</script>');
+			res.status(200).send('<script>alert("Sorry, invaild login."); window.location.href = "/#/login"</script>');
 		}
 
 	});

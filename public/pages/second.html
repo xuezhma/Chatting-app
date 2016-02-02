@@ -1,5 +1,5 @@
 <div>
-      <form action='newname' method="post">
+      <form name="myForm" action='newname' method="post" autocomplete="off">
 	<!-- <div class="vertical-center"> -->
 	<div class="container">
 	<div class="row">
@@ -11,10 +11,19 @@
 			<span class="input-group-addon">
 				<i class="glyphicon glyphicon-user"></i>
 			</span>
-			<input class="form-control" type="text" name="name" required>
-			</div>
-			<br>
-			<input class="btn btn-primary btn-block" type="submit">
+			<input class="form-control" type="text" name="name" required ng-model="myInput" name-directive>
+			</div><br>
+			<div class="alert alert-info" role="alert"
+			ng-show="myInput == undefined"
+			>Tip: Name can't be empty or "Admin".</div>
+			<div class="alert alert-warning" role="alert"
+			ng-show="myInput.length>0 && !myForm.name.$valid"
+			>This name is not available.</div>
+			<div class="alert alert-success" role="alert"
+			ng-show="myInput.length>0 && myForm.name.$valid"
+			>This name is available.</div>
+			<input class="btn btn-primary btn-block" type="submit" 
+			ng-disabled="myForm.name.$touched && !myForm.name.$valid">
 		
 
 		</div>
