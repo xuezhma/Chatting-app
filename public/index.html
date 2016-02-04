@@ -19,14 +19,14 @@
         
 
 		<div class="navbar-header">
-			<a ng-click="home = 1" class="navbar-brand" href="#/"></i> Home</a>
+			<a ng-click="home = 1; $root.inchat = 0" class="navbar-brand" href="#/"></i> Home</a>
 		</div>
 
 		<ul  class="nav navbar-nav navbar-right">
 			<li><a ng-click="home = 1; $root.inchat = 0" ng-show="$root.inchat===1" href="#/">Leave Room</a></li>
 			<li><a ng-click="home = 0" ng-hide="$root.inchat===1" href="#/join">Use As A Guest</a></li>
-            <li><a ng-click="home = 0" href="#/login">Sign In </a></li>
-            <li><a ng-click="home = 0" href="#/signup">Sign Up</a></li>
+            <li><a ng-click="home = 0; $root.inchat = 0" href="#/login">Sign In </a></li>
+            <li><a ng-click="home = 0; $root.inchat = 0" href="#/signup">Sign Up</a></li>
 
 		</ul>
 	</div>
