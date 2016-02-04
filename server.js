@@ -1,4 +1,5 @@
 // TODO: 
+//	Emojis! 
 //	email configuration	on new user
 //	check if a display name is avaiable when guests choose it
 //	personal chat history
@@ -225,6 +226,16 @@ io.on('connection', function(socket){
 			sendMyHis(socket);
 		}else{
 			message.timestamp = moment().valueOf();
+			// Emojis on the way!
+			// Bringing a little Kappa to you everyday
+			while(message.text.indexOf('KappaPride')!== -1 || message.text.indexOf('kappapride')!== -1 ){
+				message.text = message.text.replace('KappaPride', '<img src="https://static-cdn.jtvnw.net/emoticons/v1/55338/1.0">');
+				message.text = message.text.replace('kappapride', '<img src="https://static-cdn.jtvnw.net/emoticons/v1/55338/1.0">');
+			}
+			while(message.text.indexOf('Kappa')!== -1 || message.text.indexOf('kappa')!== -1 ){
+				message.text = message.text.replace('Kappa', '<img src="https://static-cdn.jtvnw.net/emoticons/v1/25/1.0">');
+				message.text = message.text.replace('kappa', '<img src="https://static-cdn.jtvnw.net/emoticons/v1/25/1.0">');
+			}
 			io.to(clientInfo[socket.id].room).emit('message',message);
 			//socket.broadcast.emit('message',message);
 
