@@ -1,0 +1,7 @@
+<h2>You Message History:</h2>
+<ul>
+<li ng-repeat="m in messages">
+	<p>In room: {{m.room}} as {{m.name}} at {{m.timestamp}}</p>
+	<p>You said: <strong>{{m.text}}</strong> </p> 
+</li>
+</ul>

@@ -1,4 +1,4 @@
-<form autocomplete="off" action='/chat.html'>
+<form name="myForm" autocomplete="off" ng-submit="submit()">
 	<div class="vertical-center">
 	<div class="container">
 	<div class="row">
@@ -10,9 +10,17 @@
 			<span class="input-group-addon">
 				<i class="glyphicon glyphicon-user"></i>
 			</span>
-			<input class="form-control" ng-model="$root.username" type="text" name="name" required>
-			</div>
-			<br><br>
+			<input class="form-control" ng-model="$root.username" type="text" name="name" required name-directive>
+			</div><br>
+			<div class="alert alert-info" role="alert"
+			ng-show="$root.username === undefined"
+			>Tip: Name can't be empty or "Admin".</div>
+			<div class="alert alert-warning" role="alert"
+			ng-show="$root.username.length>0 && !myForm.name.$valid"
+			>This name is not available.</div>
+			<div class="alert alert-success" role="alert"
+			ng-show="$root.username.length>0 && myForm.name.$valid"
+			>This name is available.</div>
 			<label>Room to Enter: </label>
 			<div class="input-group">
 			<span class="input-group-addon">
@@ -21,8 +29,7 @@
 			<input class="form-control" ng-model="$root.room" type="text" name="room" required>
 			</div><br>
 			
-			<a class="btn btn-primary btn-block" ng-click="$root.inchat=1" href="#/fifth">Real Join Chat</a>
-			<!-- <input class="btn btn-primary btn-block" type="submit" value="Join as a Guest"> --><br>
+			<input class="btn btn-primary btn-block" type="submit" ng-click="$root.inchat=1" href="#/fifth" value="Join as a Guest" ng-disabled="myForm.name.$touched && !myForm.name.$valid"><br>
 			<p>Want more porks? <a ng-click="home = 0" href="#/signup">Sign Up</a> or <a ng-click="home = 0" href="#/login">Sign In </a> now.</p>
 		
 		</form>

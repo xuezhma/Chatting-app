@@ -1,29 +1,14 @@
 // TODO:
-//	Emojis!
+//	More Emojis!
+//  improve UI: Message History view and Home view -- last task for v.1.0.0
 //	email configuration	on new user
-//	check if a display name is avaiable when guests choose it
-//	personal chat history
 //	offline message box
-var PORT = process.env.PORT || 3000
-var express = require('express')
-var app = express()
-// server session
-var expressSession = require('express-session')
-var cookieParser = require('cookie-parser')
-// must use cookieParser before session
-app.use(cookieParser())
+const PORT = process.env.PORT || 3000
+const express = require('express')
+const app = express()
 app.set('trust proxy', 1)
-app.use(expressSession({
-  secret: 'flyingkitten',
-  resave: false,
-  saveUninitialized: true,
-  cookie: {
-    secure: true,
-    maxAge: 24 * 60 * 60 * 1000
-  }
-}))
-// client session
-var sessions = require('client-sessions')
+// session
+const sessions = require('client-sessions')
 app.use(sessions({
   cookieName: 'mySession', // cookie name dictates the key name added to the request object
   secret: 'anotherflyingkitten', // should be a large unguessable string
@@ -31,28 +16,28 @@ app.use(sessions({
   activeDuration: 1000 * 60 * 5 // if expiresIn < activeDuration, the session will be extended by activeDuration milliseconds
 }))
 
-var http = require('http').Server(app)
-var io = require('socket.io')(http)
-var bodyParser = require('body-parser')
+const http = require('http').Server(app)
+const io = require('socket.io')(http)
+const bodyParser = require('body-parser')
 app.use(bodyParser.json()) // to support JSON-encoded bodies
 app.use(bodyParser.urlencoded({ // to support URL-encoded bodies
   extended: true
 }))
 
-var moment = require('moment')
+const moment = require('moment')
 
 // added mongoDB and mongoose
-var mongoose = require('mongoose')
+const mongoose = require('mongoose')
 
 mongoose.connect('mongodb://xuezhma:123@ds045785.mongolab.com:45785/chat', function (err) {
   if (err) throw err
 })
 
 // Schema collection:
-var Schema = mongoose.Schema,
+const Schema = mongoose.Schema,
   ObjectId = Schema.ObjectId
 
-var messageSchema = new Schema({
+const messageSchema = new Schema({
   email: String,
   font: String,
   room: String,
@@ -61,7 +46,7 @@ var messageSchema = new Schema({
   timestamp: Number
 })
 
-var userSchema = new Schema({
+const userSchema = new Schema({
   email: String,
   password: String,
   name: String,
@@ -69,8 +54,8 @@ var userSchema = new Schema({
   rank: String
 })
 
-var messageObject = mongoose.model('message', messageSchema)
-var userObject = mongoose.model('user', userSchema)
+const messageObject = mongoose.model('message', messageSchema)
+const userObject = mongoose.model('user', userSchema)
 
 app.use(express.static(__dirname + '/public'))
 
@@ -285,6 +270,21 @@ app.get('/welcome', function (req, res) {
   res.status(200).json(session)
 })
 
+// get user message history
+app.get('/history', function (req, res) {
+  const email = req.mySession.email
+  messageObject.find({
+    email: email
+  }, function (err, foundmessages) {
+    if (err) throw err
+
+    if (foundmessages) {
+      //console.log(foundmessages);
+      res.status(200).send(foundmessages)
+    }
+  })
+})
+
 // for new user signup
 app.post('/signup', function (req, res) {
   var body = req.body
@@ -391,17 +391,7 @@ app.post('/login', function (req, res) {
 
     if (users.length === 1 && users[0].password === password) {
       console.log('user info correct. should login')
-      var session = req.session
       req.mySession = users[0]
-
-      // keep track of how many users are logged in on server
-      if (session.users) {
-        session.users.push(users[0])
-      } else {
-        session.users = users
-      }
-      console.log(session)
-      // console.log(req)
       var tosend = '<script>window.location.href = "welcome.html"</script>'
 
       res.status(200).send(tosend)

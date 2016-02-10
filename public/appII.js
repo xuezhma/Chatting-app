@@ -65,6 +65,11 @@ myApp.config(function($routeProvider){
 		templateUrl: 'pages/chatII.html',
 		controller: 'mainController'
 	})
+	// personal message history
+	.when('/history',{
+		templateUrl: 'pages/history.html',
+		controller: 'mainController'
+	})
 	// in case ppl change hash for fun
 	.when('/404', {
 		templateUrl: 'pages/ops.html',
@@ -92,10 +97,12 @@ myApp.controller('mainController', ['$scope', '$rootScope', '$location', '$filte
 	}
 	$rootScope.inchat;
 	$rootScope.room = '';
+	$scope.messages;
 	
 	$scope.username = '';
+	// get user info from session, get message history 
 	$scope.init = function () {
-		// get user info from client session onload
+		// get user info from session onload
 		// if there is no session, kick him to sign in page
 		$http.get('/welcome')
         .success(function(data) {
@@ -121,12 +128,22 @@ myApp.controller('mainController', ['$scope', '$rootScope', '$location', '$filte
             window.location.href = "../#/login";
         });
 
-	    
 
-		
+        // get user message history, a list of message objects
+		$http.get('/history')
+        .success(function(data) {
+            $scope.messages = data;
+            console.log('messages: ', data);
+        })
+        .error(function(data) {
+            console.log('Error: ' + data);
+      		// bye
+            window.location.href = "../#/ops";
+        });
 	}
-	
 
+
+	
 	
 
 }]);
