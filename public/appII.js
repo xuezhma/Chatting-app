@@ -82,6 +82,10 @@ myApp.config(function($routeProvider){
 
 myApp.controller('mainController', ['$scope', '$rootScope', '$location', '$filter', '$timeout', '$http', '$log', function($scope, $rootScope, $location, $filter, $timeout, $http, $log){
 	
+	// Call moment for message history
+	$scope.moment = function(timestamp) {
+		return moment.utc(timestamp).local().format('MMM Do, YYYY h:mm a');
+	}
 	$scope.$watch('$root.room', function(newValue, oldValue){
 		console.info('Changed!');
 		console.log('Old: ' + oldValue);
@@ -98,8 +102,9 @@ myApp.controller('mainController', ['$scope', '$rootScope', '$location', '$filte
 	$rootScope.inchat;
 	$rootScope.room = '';
 	$scope.messages;
-	
+	$scope.change;			// for editing avatar img
 	$scope.username = '';
+	// APIs start here: 
 	// get user info from session, get message history 
 	$scope.init = function () {
 		// get user info from session onload
@@ -108,6 +113,7 @@ myApp.controller('mainController', ['$scope', '$rootScope', '$location', '$filte
         .success(function(data) {
             console.log("User info: " + data);
             $rootScope.session = data;
+            $rootScope.session.url = $rootScope.session.url || "https://cdn3.iconfinder.com/data/icons/rcons-user-action/32/boy-512.png";
             console.log("User infoII: " + $rootScope.session.email);
             if ($rootScope.session.email === undefined){
             	console.log("wow");
@@ -142,7 +148,20 @@ myApp.controller('mainController', ['$scope', '$rootScope', '$location', '$filte
         });
 	}
 
+	// update
+	$scope.updateUrl = function() {
+		$rootScope.session.url = $scope.url;
+		$http.post('/updateUrl', {url: $scope.url})
+		.then(function(data) {
+			$scope.change = 1;
+		}, function(data) {
+			// default avatar img
+			$rootScope.session.url = "https://cdn3.iconfinder.com/data/icons/rcons-user-action/32/boy-512.png"; 
+			$log.error("Error updating url");
+		});
 
+	}
+	// APIs end here
 	
 	
 

@@ -1,6 +1,5 @@
 // TODO:
 //	More Emojis!
-//  improve UI: Message History view and Home view -- last task for v.1.0.0
 //	email configuration	on new user
 //	offline message box
 const PORT = process.env.PORT || 3000
@@ -50,6 +49,7 @@ const userSchema = new Schema({
   email: String,
   password: String,
   name: String,
+  url: String,    //avatar img
   active: String,
   rank: String
 })
@@ -260,6 +260,27 @@ app.post('/displayname', function (req, res) {
       res.status(200).send('available')
     }
   })
+})
+
+// user avator img url
+app.post('/updateUrl', function (req, res) {
+  const url = req.body.url
+  userObject.findOne({
+    email: req.mySession.email
+  }, function (err, founduser) {
+    if (err) throw err
+
+    if (founduser) {
+      founduser.url = url
+      founduser.save(function (err) {
+        if (err) throw err
+
+        console.log('url saved!')
+      })
+    }
+  })
+
+  res.status(200).json(url)
 })
 
 // get user info from client session

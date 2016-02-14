@@ -1,6 +1,19 @@
-<div id="home" class="text-center">
-    
-      
-    	<h4>{{name}}</h4>
-		<h2 class=" vertical-center"> Have fun! </h2>
+<div id="home" class="container">
+<h4 class="text-center">{{name}}</h4>
+	<div class="vertical-center row">
+	<div class="col-md-3 col-md-offset-0 well">
+	<img src={{$root.session.url}} height="200" width="200">
+	<h5>{{$root.session.email}}</h5>
+	<div ng-show = 'change!==0'>
+		<a ng-click = 'change=0' style="float: right;" class="btn"> Change img</a>
+	</div>
+	<div ng-show = 'change===0'>
+		<input type = "text" name = "img" ng-model = "url"><br>
+		<a ng-click = 'change=1' style="float: right;" class="btn" >Cancel</a>
+		<a style="float: left;" ng-click="updateUrl()" class="btn"> Submit</a>
+	</div>
+	</div>
+	</div>
 </div>
+
+

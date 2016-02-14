@@ -1,7 +1,13 @@
 <h2>You Message History:</h2>
 <ul>
+<div ng-if="messages.length === 0">
+<br>
+<h4>Sorry, you have not sent any message yet.<h4><br>
+<h4>Oh you just did? Refresh the page and see if it got here.</h4>
+<br>
+</div>
 <li ng-repeat="m in messages">
-	<p>In room: {{m.room}} as {{m.name}} at {{m.timestamp}}</p>
+	<p>In room: {{m.room}}, as {{m.name}} at {{moment(m.timestamp)}}</p>
 	<p>You said: <strong>{{m.text}}</strong> </p> 
 </li>
 </ul>
