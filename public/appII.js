@@ -4,6 +4,17 @@ var myApp = angular.module('myApp', ['ngRoute']);
 // 	b.info(a);
 // }]);
 
+// avatar img validation
+myApp.directive('fallbackSrc', function () {
+  var fallbackSrc = {
+    link: function postLink(scope, iElement, iAttrs) {
+      iElement.bind('error', function() {
+        angular.element(this).attr("src", iAttrs.fallbackSrc);
+      });
+    }
+   }
+   return fallbackSrc;
+});
 
 // form validation
 // check if a display name is claimed by a registered user when ppl want to use it 
@@ -160,6 +171,20 @@ myApp.controller('mainController', ['$scope', '$rootScope', '$location', '$filte
 			$log.error("Error updating url");
 		});
 
+	}
+
+	//log out, destory session
+	$scope.logout = function() {
+		$http.get('/logout')
+        .success(function(data) {
+            $scope.messages = data;
+            $log.info('messages: ', data);
+        })
+        .error(function(data) {
+            $log.error('Error: ' + data);
+      		// bye
+            window.location.href = "../#/ops";
+        });
 	}
 	// APIs end here
 	

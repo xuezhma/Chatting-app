@@ -2,7 +2,7 @@
 <h4 class="text-center">{{name}}</h4>
 	<div class="vertical-center row">
 	<div class="col-md-3 col-md-offset-0 well">
-	<img src={{$root.session.url}} height="200" width="200">
+	<img fallback-src="/images/404.jpg" ng-src={{$root.session.url}} height="200" width="200">
 	<h5>{{$root.session.email}}</h5>
 	<div ng-show = 'change!==0'>
 		<a ng-click = 'change=0' style="float: right;" class="btn"> Change img</a>

@@ -265,6 +265,8 @@ app.post('/displayname', function (req, res) {
 // user avator img url
 app.post('/updateUrl', function (req, res) {
   const url = req.body.url
+  // remember to update session
+  req.mySession.url = url
   userObject.findOne({
     email: req.mySession.email
   }, function (err, founduser) {
@@ -396,31 +398,41 @@ app.post('/newpassword', function (req, res) {
   })
 })
 
-// for user sign in, put his info into sessions of both server and client
+// log out, distory session
+app.get('/logout', function (req, res) {
+  delete req.mySession.email   // module doesn't allow setting session to non-object
+  res.status(200).send();
+})
+
+// for user sign in, put his info into session
 app.post('/login', function (req, res) {
-  var body = req.body
-  var email = body.email
-  var password = body.password
+  var tosend = '<script>window.location.href = "welcome.html"</script>'
+  if (typeof(req.mySession.email) === undefined) {
+    res.status(200).send(tosend)
+  } else {
+    var body = req.body
+    var email = body.email
+    var password = body.password
 
-  userObject.find({
-    email: email,
-    password: password
-  }, function (err, users) {
-    if (err) throw err
+    userObject.find({
+      email: email,
+      password: password
+    }, function (err, users) {
+      if (err) throw err
 
-    // console.log(users)
+      // console.log(users)
 
-    if (users.length === 1 && users[0].password === password) {
-      console.log('user info correct. should login')
-      req.mySession = users[0]
-      var tosend = '<script>window.location.href = "welcome.html"</script>'
+      if (users.length === 1 && users[0].password === password) {
+        console.log('user info correct. should login')
+        req.mySession = users[0]
 
-      res.status(200).send(tosend)
-    // res.sendFile('/public/welcome.html?email='+sess.user.email, {root: __dirname})
-    } else {
-      res.status(200).send('<script>alert("Sorry, invaild login."); window.location.href = "/#/login"</script>')
-    }
-  })
+        res.status(200).send(tosend)
+      // res.sendFile('/public/welcome.html?email='+sess.user.email, {root: __dirname})
+      } else {
+        res.status(200).send('<script>alert("Sorry, invaild login."); window.location.href = "/#/login"</script>')
+      }
+    })
+  }
 })
 
 http.listen(PORT, function () {
