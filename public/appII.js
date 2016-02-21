@@ -26,7 +26,6 @@ myApp.directive('nameDirective', ['$http', '$log', function($http, $log) {
                 if (value.length > 0) {
                 	$http.post('/displayname', {name: value})
 	            	.success(function(data){
-	            		console.log(data);
 	            		if(data == 'available'){
 	            			mCtrl.$setValidity('charE', true);
 	            		}else{
@@ -56,6 +55,31 @@ myApp.config(function($routeProvider){
 		templateUrl: 'pages/main.html',
 		controller: 'mainController'
 	})
+	// mailbox-compose
+	.when('/compose',{
+		templateUrl: 'pages/compose.html',
+		controller: 'mainController'
+	})
+	// mailbox-inbox
+	.when('/inbox',{
+		templateUrl: 'pages/inbox.html',
+		controller: 'mainController'
+	})
+	// mailbox-draft
+	.when('/draft',{
+		templateUrl: 'pages/draft.html',
+		controller: 'mainController'
+	})
+	// mailbox-sent
+	.when('/sent',{
+		templateUrl: 'pages/sent.html',
+		controller: 'mainController'
+	})
+	// mailbox-spam
+	.when('/spam',{
+		templateUrl: 'pages/spam.html',
+		controller: 'mainController'
+	})
 	// change name
 	.when('/second',{
 		templateUrl: 'pages/second.html',
@@ -81,6 +105,7 @@ myApp.config(function($routeProvider){
 		templateUrl: 'pages/history.html',
 		controller: 'mainController'
 	})
+
 	// in case ppl change hash for fun
 	.when('/404', {
 		templateUrl: 'pages/ops.html',
@@ -186,6 +211,26 @@ myApp.controller('mainController', ['$scope', '$rootScope', '$location', '$filte
             window.location.href = "../#/ops";
         });
 	}
+
+	$scope.compose = function() {
+		var mail = {
+			name: $scope.toName,
+			subject: $scope.subject,
+			content: $scope.content
+		}
+
+		$http.post('/compose', mail)
+		.then(function(data) {
+			alert('success: ', data);
+			$scope.toName = "";
+			$scope.subject = "";
+			$scope.content = "";
+
+		}), function(data) {
+			alert('not success: ', data)
+		}
+	}
+
 	// APIs end here
 	
 	

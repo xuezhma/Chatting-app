@@ -54,8 +54,20 @@ const userSchema = new Schema({
   rank: String
 })
 
+const mailSchema = new Schema({
+  read: Boolean,
+  fromEmail: String,  // sender's email
+  fromName: String,   // sender's name at that time
+  toEmail: String,    // reciever's name at that time
+  toName: String,     // reciever's email
+  subject: String,
+  content: String,
+  timestamp: Number
+})
+
 const messageObject = mongoose.model('message', messageSchema)
 const userObject = mongoose.model('user', userSchema)
+const mailObject = mongoose.model('mail', mailSchema)
 
 app.use(express.static(__dirname + '/public'))
 
@@ -245,18 +257,14 @@ io.on('connection', function (socket) {
 // check if a display name is avaiable
 app.post('/displayname', function (req, res) {
   var name = req.body.name
-  console.log(req.body.name)
   userObject.find({
     name: name
   }, function (err, founduser) {
     if (err) throw err
 
     if (founduser.length > 0) {
-      console.log(founduser)
-      console.log('unavailable')
       res.status(200).send('unavailable')
     } else {
-      console.log('avaiable')
       res.status(200).send('available')
     }
   })
@@ -433,6 +441,40 @@ app.post('/login', function (req, res) {
       }
     })
   }
+})
+
+// mailbox services start here:
+
+// compose
+app.post('/compose', function (req, res) {
+  const body = req.body
+  const session = req.mySession
+  userObject.find({
+    name: body.name
+  }, function (err, founduser) {
+    if (err) throw err
+
+    if (founduser) {
+      const newMail = mailObject({
+        read: false,
+        fromEmail: session.email,
+        fromName: session.name,
+        toEmail: founduser.email,
+        toName: body.name,
+        subject: body.subject,
+        content: body.content,
+        timestamp: moment().valueOf()
+      })
+
+      newMail.save(function (err) {
+        if (err) throw err
+
+        console.log('new mail saved!: ', newMail)
+        res.status(200).send()
+      })
+
+    }
+  })
 })
 
 http.listen(PORT, function () {
