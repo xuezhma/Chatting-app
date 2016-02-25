@@ -1,1 +1,19 @@
-sent
+<div class="container">
+<ul>	
+	<div ng-repeat="mail in sent">
+	<p class="btn btn-info" ng-click="sentTab = sent.indexOf(mail)">Subject: {{mail.subject}}</p>
+
+	<div class="well" ng-show="sentTab === sent.indexOf(mail)">
+	<a class="btn btn-default" ng-click="sentTab=-1">Hide</a>
+	<a class="btn btn-default">Delete</a>
+	<br><br>
+	<p>To: <strong>{{mail.toName}}</strong>, He knew you as <strong>{{mail.fromName}}</strong>.</p>
+	<br>
+	<p>Content: </p>
+	<p> {{mail.content}}</p>
+	<br>
+	<p> Sent at {{moment(m.timestamp)}}</p>
+	</div> 
+	</div>
+</ul>
+</div>

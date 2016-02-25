@@ -32,4 +32,6 @@
 <p> Claim a display name that will no longer avaiable to other users</p>
 <p> Personal chat message history</P>
 <p> Change password</p>
+<p> Mail box</p>
+<p> Avatar</p>
 

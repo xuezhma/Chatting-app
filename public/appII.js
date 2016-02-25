@@ -123,9 +123,6 @@ myApp.controller('mainController', ['$scope', '$rootScope', '$location', '$filte
 		return moment.utc(timestamp).local().format('MMM Do, YYYY h:mm a');
 	}
 	$scope.$watch('$root.room', function(newValue, oldValue){
-		console.info('Changed!');
-		console.log('Old: ' + oldValue);
-		console.log('New: ' + newValue);
 		if(typeof(newValue)!==undefined && newValue.length !==0){
 			$rootScope.iframe = 'chat.html?name=' + $rootScope.session.name + '&room=' + $rootScope.room +'&email=' + $rootScope.session.email;
 		}
@@ -182,6 +179,31 @@ myApp.controller('mainController', ['$scope', '$rootScope', '$location', '$filte
       		// bye
             window.location.href = "../#/ops";
         });
+
+        // get user mail inbox, a list of mail objects
+        $http.get('/inbox')
+        .success(function(data) {
+        	$scope.inbox = data;
+        	$log.info("inbox: ", $scope.inbox);
+        })
+        .error(function(data) {
+        	alert('Error: ' + data);
+      		// bye
+            window.location.href = "../#/ops";
+        })
+
+        // get user mail sent, a list of mail objects
+        $http.get('/sent')
+        .success(function(data) {
+        	$scope.sent = data;
+        	$log.info("sent: ", $scope.sent);
+        })
+        .error(function(data) {
+        	alert('Error: ' + data);
+      		// bye
+            window.location.href = "../#/ops";
+        })
+
 	}
 
 	// update
@@ -221,6 +243,7 @@ myApp.controller('mainController', ['$scope', '$rootScope', '$location', '$filte
 
 		$http.post('/compose', mail)
 		.then(function(data) {
+			$scope.sent.push(mail);
 			alert('success: ', data);
 			$scope.toName = "";
 			$scope.subject = "";

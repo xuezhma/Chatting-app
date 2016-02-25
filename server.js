@@ -2,6 +2,7 @@
 //	More Emojis!
 //	email configuration	on new user
 //	offline message box
+//  tell if a mail or a chat message is spam
 const PORT = process.env.PORT || 3000
 const express = require('express')
 const app = express()
@@ -449,7 +450,7 @@ app.post('/login', function (req, res) {
 app.post('/compose', function (req, res) {
   const body = req.body
   const session = req.mySession
-  userObject.find({
+  userObject.findOne({
     name: body.name
   }, function (err, founduser) {
     if (err) throw err
@@ -473,6 +474,36 @@ app.post('/compose', function (req, res) {
         res.status(200).send()
       })
 
+    }
+  })
+})
+
+// inbox
+// fires  
+app.get('/inbox', function (req, res) {
+  mailObject.find({
+    toEmail: req.mySession.email
+  }, function (err, foundMails) {
+    if (err) throw err
+
+    if (foundMails) {
+      console.log(foundMails)
+      res.status(200).json(foundMails)
+    }
+  })
+})
+
+// sent
+// fires only in $scope.init
+app.get('/sent', function (req, res) {
+  mailObject.find({
+    fromEmail: req.mySession.email
+  }, function (err, foundMails) {
+    if (err) throw err
+
+    if (foundMails) {
+      console.log(foundMails)
+      res.status(200).json(foundMails)
     }
   })
 })

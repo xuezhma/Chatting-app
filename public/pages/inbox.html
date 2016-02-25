@@ -1,1 +1,21 @@
-Inbox
+<div class="container">
+<ul>	
+	<div ng-repeat="mail in inbox">
+	<p class="btn btn-info" ng-click="inboxTab = inbox.indexOf(mail)">Subject: {{mail.subject}}</p>
+
+	<div class="well" ng-show="inboxTab === inbox.indexOf(mail)">
+	<a class="btn btn-default" ng-click="inboxTab=-1">Hide</a>
+	<a class="btn btn-default" href="#/compose?to={{mail.toName}}">Reply</a>
+	<a class="btn btn-default">Delete</a>
+	<a class="btn btn-danger">Report Abuse</a>
+	<br><br>
+	<p>From: <strong>{{mail.fromName}}</strong>, He knew you as <strong>{{mail.toName}}</strong>.</p>
+	<br>
+	<p>Content: </p>
+	<p> {{mail.content}}</p>
+	<br>
+	<p> Sent at {{moment(m.timestamp)}}</p>
+	</div> 
+	</div>
+</ul>
+</div>
