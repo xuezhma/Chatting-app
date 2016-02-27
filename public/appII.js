@@ -126,7 +126,7 @@ myApp.controller('mainController', ['$scope', '$rootScope', '$location', '$filte
 		if(typeof(newValue)!==undefined && newValue.length !==0){
 			$rootScope.iframe = 'chat.html?name=' + $rootScope.session.name + '&room=' + $rootScope.room +'&email=' + $rootScope.session.email;
 		}
-		$log.info($rootScope.iframe);
+		//$log.info($rootScope.iframe);
 	});
 
 	$scope.addroom = function(){
@@ -137,6 +137,7 @@ myApp.controller('mainController', ['$scope', '$rootScope', '$location', '$filte
 	$scope.messages;
 	$scope.change;			// for editing avatar img
 	$scope.username = '';
+	$scope.toName = $location.$$url.split("=")[1];
 	// APIs start here: 
 	// get user info from session, get message history 
 	$scope.init = function () {
@@ -167,27 +168,15 @@ myApp.controller('mainController', ['$scope', '$rootScope', '$location', '$filte
             window.location.href = "../#/login";
         });
 
-
-        // get user message history, a list of message objects
-		$http.get('/history')
-        .success(function(data) {
-            $scope.messages = data;
-            console.log('messages: ', data);
-        })
-        .error(function(data) {
-            console.log('Error: ' + data);
-      		// bye
-            window.location.href = "../#/ops";
-        });
-
         // get user mail inbox, a list of mail objects
         $http.get('/inbox')
         .success(function(data) {
+        	data.reverse();
         	$scope.inbox = data;
         	$log.info("inbox: ", $scope.inbox);
         })
         .error(function(data) {
-        	alert('Error: ' + data);
+        	$log.error('Error: ' + data);
       		// bye
             window.location.href = "../#/ops";
         })
@@ -199,14 +188,28 @@ myApp.controller('mainController', ['$scope', '$rootScope', '$location', '$filte
         	$log.info("sent: ", $scope.sent);
         })
         .error(function(data) {
-        	alert('Error: ' + data);
+        	$log.error('Error: ' + data);
       		// bye
             window.location.href = "../#/ops";
         })
 
 	}
 
-	// update
+	// get user message history, a list of message objects
+	$scope.messageHistory = function(){
+		$http.get('/history')
+        .success(function(data) {
+            $scope.messages = data;
+            console.log('messages: ', data);
+        })
+        .error(function(data) {
+            console.log('Error: ' + data);
+      		// bye
+            window.location.href = "../#/ops";
+        });
+    }
+
+	// update avatar img url
 	$scope.updateUrl = function() {
 		$rootScope.session.url = $scope.url;
 		$http.post('/updateUrl', {url: $scope.url})
@@ -249,9 +252,87 @@ myApp.controller('mainController', ['$scope', '$rootScope', '$location', '$filte
 			$scope.subject = "";
 			$scope.content = "";
 
-		}), function(data) {
-			alert('not success: ', data)
-		}
+		}, function(data) {
+			if (data.status === 404) {
+				alert('Not success: user ' + $scope.toName + ' does not exit.')
+			}
+			
+		});
+	}
+
+	// get update on Inbox and Message history every 5 sec
+	var autoCheck = function(){
+		$timeout(function () {
+          $http.get('/inbox')
+	        .success(function(data) {
+	        	var dataLen = data.length
+	        	var inboxLen = $scope.inbox.length
+	        	while(dataLen > inboxLen){
+	        		$scope.inbox.unshift(data.pop());
+	        		dataLen--;
+	        	}
+	        	
+	        	autoCheck();
+	        })
+	        .error(function(data) {
+	        	$log.error('Error: ' + data);
+	      		// bye
+	            window.location.href = "../#/ops";
+	        })
+
+        $http.get('/history')
+	        .success(function(data) {
+	            $scope.messages = data;
+	        })
+	        .error(function(data) {
+	            console.log('Error: ' + data);
+	      		// bye
+	            window.location.href = "../#/ops";
+	        })
+        }, 1000 * 5 * 1)};
+
+	autoCheck();
+		
+	// update a mail if it's read by user
+	$scope.updateMail = function(mailID) {
+		$http.post('/updateMail', {mailID: mailID})
+		.then(function(data) {
+			// uhh do nothing?
+		}, function(data) {
+			$log.error("Error updating mail: ", data)
+		})
+	}
+
+	// delete a mail in inbox
+	$scope.deleteInboxMail = function(mail) {
+		$http.post('/deleteInboxMail', {mailID: mail._id})
+		.then(function(data) {
+			$scope.inbox.splice($scope.inbox.indexOf(mail),1);
+			$log.info($scope.inbox);
+		}, function(data) {
+			$log.error("Error deleting mail: ", data)
+		})
+	}
+
+	// delete a mail in sent
+	$scope.deleteSentMail = function(mail) {
+		$http.post('/deleteSentMail', {mailID: mail._id})
+		.then(function(data) {
+			$scope.sent.splice($scope.sent.indexOf(mail),1);
+			$log.info($scope.sent);
+		}, function(data) {
+			$log.error("Error deleting mail: ", data)
+		})
+	}
+	
+	// report abuse
+	$scope.reportAbuse = function(mailID) {
+		$http.post('/reportAbuse', {mailID: mailID})
+		.then(function(data) {
+			alert("User reported! Thx.");
+		}, function(data) {
+			$log.error("Error reporting user: ", data)
+		})
 	}
 
 	// APIs end here

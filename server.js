@@ -3,7 +3,8 @@
 //	email configuration	on new user
 //	offline message box
 //  tell if a mail or a chat message is spam
-const PORT = process.env.PORT || 3000
+//  admin functions
+const PORT = process.env.PORT || 3001
 const express = require('express')
 const app = express()
 app.set('trust proxy', 1)
@@ -47,6 +48,7 @@ const messageSchema = new Schema({
 })
 
 const userSchema = new Schema({
+  reportedAbuse: Array,
   email: String,
   password: String,
   name: String,
@@ -57,6 +59,8 @@ const userSchema = new Schema({
 
 const mailSchema = new Schema({
   read: Boolean,
+  readableInbox: Boolean,
+  readableSent: Boolean,
   fromEmail: String,  // sender's email
   fromName: String,   // sender's name at that time
   toEmail: String,    // reciever's name at that time
@@ -330,6 +334,7 @@ app.post('/signup', function (req, res) {
       res.status(200).send('<script>alert("Sorry, the email is already used."); window.location.href = "/#/signup"</script>')
     } else {
       var newUser = userObject({
+        reportedAbuse: [],
         email: body.email,
         password: body.password,
         active: 'yes',
@@ -458,6 +463,8 @@ app.post('/compose', function (req, res) {
     if (founduser) {
       const newMail = mailObject({
         read: false,
+        readableInbox: true,
+        readableSent: true,
         fromEmail: session.email,
         fromName: session.name,
         toEmail: founduser.email,
@@ -474,20 +481,23 @@ app.post('/compose', function (req, res) {
         res.status(200).send()
       })
 
+    } else {
+      res.status(404).send()
     }
   })
 })
 
 // inbox
-// fires  
+// fires in $scope.init and every a while (determined by user)
 app.get('/inbox', function (req, res) {
   mailObject.find({
+    readableInbox: true,
     toEmail: req.mySession.email
   }, function (err, foundMails) {
     if (err) throw err
 
     if (foundMails) {
-      console.log(foundMails)
+      //console.log(foundMails)
       res.status(200).json(foundMails)
     }
   })
@@ -497,16 +507,107 @@ app.get('/inbox', function (req, res) {
 // fires only in $scope.init
 app.get('/sent', function (req, res) {
   mailObject.find({
+    readableSent: true,
     fromEmail: req.mySession.email
   }, function (err, foundMails) {
     if (err) throw err
 
     if (foundMails) {
-      console.log(foundMails)
+      
       res.status(200).json(foundMails)
     }
   })
 })
+
+// update read mail
+app.post('/updateMail', function (req, res) {
+  mailObject.findOne({
+    _id: req.body.mailID
+  }, function (err, foundMail) {
+    if (err) throw err
+
+    if (foundMail) {
+      foundMail.read = true
+      foundMail.save(function (err) {
+        if (err) throw err
+
+        console.log('updated read mail')
+      })
+    }
+  })
+  res.status(200).json()
+})
+
+// disable a mail appear in inbox
+app.post('/deleteInboxMail', function (req, res) {
+  mailObject.findOne({
+    _id: req.body.mailID
+  }, function (err, foundMail) {
+    if (err) throw err
+
+    if (foundMail) {
+      foundMail.readableInbox = false
+      foundMail.save(function (err) {
+        if (err) throw err
+
+        console.log('this mail is no longer in inbox')
+      })
+    }
+    res.status(200).json()
+  })
+})
+
+// disable a mail appear in sent
+app.post('/deleteSentMail', function (req, res) {
+  mailObject.findOne({
+    _id: req.body.mailID
+  }, function (err, foundMail) {
+    if (err) throw err
+
+    if (foundMail) {
+      foundMail.readableSent = false
+      foundMail.save(function (err) {
+        if (err) throw err
+
+        console.log('this mail is no longer in sent')
+      })
+    }
+    res.status(200).json()
+  })
+})
+
+// report abuse
+app.post('/reportAbuse', function (req, res) {
+  const mailID = req.body.mailID
+  mailObject.findOne({
+    _id: mailID
+  }, function (err, foundMail) {
+    if (err) throw err
+
+    if (foundMail) {
+      userObject.findOne({
+        email: foundMail.fromEmail
+      }, function (err, founduser) {
+        if (err) throw err
+
+        if(founduser) {
+          founduser.reportedAbuse.push(mailID)
+
+          founduser.save(function (err) {
+            if (err) throw err
+
+            console.log('this user is reported abuse')
+          })
+        }
+      })
+    }
+    res.status(200).json()
+  })
+})
+
+
+// mail services end here
+// RESTful APIs end here
 
 http.listen(PORT, function () {
   console.log('Server started!')
