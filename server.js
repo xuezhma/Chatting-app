@@ -1,10 +1,13 @@
 // TODO:
-//	More Emojis!
+//	Improve English-To-Emoji module
 //	email configuration	on new user
 //	offline message box
 //  tell if a mail or a chat message is spam
 //  admin functions
-const PORT = process.env.PORT || 3001
+const emoji = require('./English-To-Emoji') // less words === more fun
+const translate = emoji.translate
+const listMemes = emoji.listMemes
+const PORT = process.env.PORT || 3000
 const express = require('express')
 const app = express()
 app.set('trust proxy', 1)
@@ -90,6 +93,14 @@ function sendHelp (socket) {
 		<li>type "/roomHis" to display the message history of your current room.</li>\
 		<li>type "/myHis" to display the message history of your current display name.</li>\
 		<li> More commands are on the way!</p></li>',
+    timestamp: moment().valueOf()
+  })
+}
+
+function sendMemeList (socket) {
+  socket.emit('message', {
+    name: 'System',
+    text: `<h5>Here is our current meme collection, type its name to use.</h5> ${listMemes()}`,
     timestamp: moment().valueOf()
   })
 }
@@ -218,20 +229,10 @@ io.on('connection', function (socket) {
       sendRoomHis(socket)
     } else if (message.text === '/myHis') {
       sendMyHis(socket)
+    } else if (message.text === '/memeList') {
+      sendMemeList(socket)
     } else {
       message.timestamp = moment().valueOf()
-      // Emojis on the way!
-      // Bringing a little Kappa to you everyday
-      while (message.text.indexOf('KappaPride') !== -1 || message.text.indexOf('kappapride') !== -1) {
-        message.text = message.text.replace('KappaPride', '<img src="https://static-cdn.jtvnw.net/emoticons/v1/55338/1.0">')
-        message.text = message.text.replace('kappapride', '<img src="https://static-cdn.jtvnw.net/emoticons/v1/55338/1.0">')
-      }
-      while (message.text.indexOf('Kappa') !== -1 || message.text.indexOf('kappa') !== -1) {
-        message.text = message.text.replace('Kappa', '<img src="https://static-cdn.jtvnw.net/emoticons/v1/25/1.0">')
-        message.text = message.text.replace('kappa', '<img src="https://static-cdn.jtvnw.net/emoticons/v1/25/1.0">')
-      }
-      io.to(clientInfo[socket.id].room).emit('message', message)
-      // socket.broadcast.emit('message',message)
 
       var randomMessage = messageObject({
         room: clientInfo[socket.id].room,
@@ -246,12 +247,17 @@ io.on('connection', function (socket) {
 
         console.log('message saved!')
       })
+
+      // Improvements on the way!
+      message.text = translate(message.text)
+      io.to(clientInfo[socket.id].room).emit('message', message)
+      // socket.broadcast.emit('message',message)
     }
   })
 
   socket.emit('message', {
     name: 'System',
-    text: 'Welcome!</p><p> Type <strong> "/help" </strong> for user commands!',
+    text: `Welcome!</p><p> Type <strong> "/help" </strong> for user commands!</p><p> Type <strong>"/memeList"</strong> for meme collection!<img src="https://static-cdn.jtvnw.net/emoticons/v1/25/1.0">`,
     timestamp: moment().valueOf()
   })
 })
@@ -607,6 +613,12 @@ app.post('/reportAbuse', function (req, res) {
 
 
 // mail services end here
+
+// 404
+app.get('*', function(req, res){
+  res.status(200).sendFile('/public/pages/ops.html', {root: __dirname})
+})
+
 // RESTful APIs end here
 
 http.listen(PORT, function () {
